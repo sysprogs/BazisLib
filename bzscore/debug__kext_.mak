@@ -13,7 +13,7 @@ OBJCOPY := objcopy
 
 #Additional flags
 PREPROCESSOR_MACROS := 
-INCLUDE_DIRS := ../../../STLPort-Kernel/stlport
+INCLUDE_DIRS := ../../STLPort-Kernel/stlport
 LIBRARY_DIRS := 
 LIBRARY_NAMES := 
 ADDITIONAL_LINKER_INPUTS := 

@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" InitialTargets="CheckEnvironment" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Target Name="CheckEnvironment">
-      <Error Condition="(!exists('$(WDKPATH)\include\km')) and (('$(Configuration)'=='Debug (WinKernel)') or ('$(Configuration)'=='Release (WinKernel)'))" Text="The WDK_PATH environment variable is missing or does not point to Windows 8.x Driver Kit"/>
-      <Error Condition="(!exists('$(WDK7PATH)\inc\ddk')) and (('$(Configuration)'=='Debug (WinKernel-WDK7)') or ('$(Configuration)'=='Release (WinKernel-WDK7)'))" Text="The WDK7_PATH environment variable is missing or does not point to Windows 8.x Driver Kit"/>
+      <Error Condition="(!exists('$(WDKPATH)\include\km')) and (('$(Configuration)'=='Debug (WinKernel)') or ('$(Configuration)'=='Release (WinKernel)'))" Text="The WDK_PATH environment variable is missing or does not point at Windows 8.x Driver Kit"/>
+      <Error Condition="(!exists('$(WDK7PATH)\inc\ddk')) and (('$(Configuration)'=='Debug (WinKernel-WDK7)') or ('$(Configuration)'=='Release (WinKernel-WDK7)'))" Text="The WDK7_PATH environment variable is missing or does not point at Windows 8.x Driver Kit"/>
       <Error Condition="(!exists('$(STLPORT_PATH)\stlport')) and (('$(Configuration)'=='Debug (WinKernel-WDK7)') or ('$(Configuration)'=='Release (WinKernel-WDK7)') or ('$(Configuration)'=='Debug (WinKernel)') or ('$(Configuration)'=='Release (WinKernel)'))" Text="The STLPORT_PATH environment variable should point at STLPort-kernel.%0D%0AYou can get STLPort-kernel at http://github.com/sysprogs/stlport-kernel.git"/>
+      <Error Condition="'$(BZSLIB_PATH.ToUpper())\BZSCORE\' != '$(ProjectDir.ToUpper())'" Text="The BZSLIB_PATH environment variable does not point at the BazisLib directory. The current variable value is $(BZSLIB_PATH)."/>
   </Target>
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug (KEXT)|Win32">

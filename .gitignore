@@ -26,3 +26,15 @@
 *.exe
 *.out
 *.app
+*.log
+*.tlog
+*.idb
+*.pdb
+*.lastbuildstate
+*.sdf
+*.suo
+*.ilk
+SourceCache.dat
+*.ipch
+/tests/BigCrossPlatformTest/UserMode/Debug
+/tests/BigCrossPlatformTest/Win7Debug
