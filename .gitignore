@@ -38,3 +38,4 @@ SourceCache.dat
 *.ipch
 /tests/BigCrossPlatformTest/UserMode/Debug
 /tests/BigCrossPlatformTest/Win7Debug
+/support/strgen/Release
