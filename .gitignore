@@ -36,6 +36,11 @@
 *.ilk
 SourceCache.dat
 *.ipch
-/tests/BigCrossPlatformTest/UserMode/Debug
-/tests/BigCrossPlatformTest/Win7Debug
+Debug
+Release
+Win7Debug
+Debug (KEXT)
+Release (KEXT)
+CodeDB
 /support/strgen/Release
+*.opensdf
