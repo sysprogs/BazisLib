@@ -21,14 +21,44 @@ ifeq ($(KEXT),1)
 ADDITIONAL_MAKE_FILES += kext.mak
 endif
 
+#LINKER_SCRIPT defined inside the configuration file (e.g. debug.mak) should override any linker scripts defined in shared .mak files
+CONFIGURATION_LINKER_SCRIPT := $(LINKER_SCRIPT)
+
 include $(ADDITIONAL_MAKE_FILES)
+
+ifneq ($(CONFIGURATION_LINKER_SCRIPT),)
+LINKER_SCRIPT := $(CONFIGURATION_LINKER_SCRIPT)
+endif
+
+ifneq ($(LINKER_SCRIPT),)
+LDFLAGS += -T$(LINKER_SCRIPT)
+endif
 
 ifeq ($(BINARYDIR),)
 error:
 	$(error Invalid configuration, please check your inputs)
 endif
 
-SOURCEFILES := KEXT/kext_socket.cpp KEXT/kext_unicode.cpp Posix/DNS.cpp Posix/kext.cpp Posix/posix_path.cpp Posix/posix_status.cpp stdafx.cpp Win32/path.cpp Win32/registry_win32.cpp Win32/security.cpp Win32/win32_socket.cpp Win32/win32_string.cpp Win32/win32_status.cpp WinKernel/init.cpp WinKernel/memdbg.cpp WinKernel/ntstatus.cpp WinKernel/ntstatusdbg.cpp WinKernel/registry_nt.cpp WinKernel/stlsup.cpp WinKernel/ddk_string.cpp
+SOURCEFILES := KEXT/kext_socket.cpp \
+	KEXT/kext_unicode.cpp \
+	Posix/DNS.cpp \
+	Posix/kext.cpp \
+	Posix/posix_path.cpp \
+	Posix/posix_status.cpp \
+	stdafx.cpp \
+	Win32/path.cpp \
+	Win32/registry_win32.cpp \
+	Win32/security.cpp \
+	Win32/win32_socket.cpp \
+	Win32/win32_string.cpp \
+	Win32/win32_status.cpp \
+	WinKernel/init.cpp \
+	WinKernel/memdbg.cpp \
+	WinKernel/ntstatus.cpp \
+	WinKernel/ntstatusdbg.cpp \
+	WinKernel/registry_nt.cpp \
+	WinKernel/stlsup.cpp \
+	WinKernel/ddk_string.cpp
 EXTERNAL_LIBS := 
 EXTERNAL_LIBS_COPIED := $(foreach lib, $(EXTERNAL_LIBS),$(BINARYDIR)/$(notdir $(lib)))
 

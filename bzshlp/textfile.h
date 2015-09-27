@@ -28,16 +28,15 @@ namespace BazisLib
 		template <class _CharType, unsigned _LineEnding, unsigned _LineEndingCharCount> class _TextFile : AUTO_OBJECT
 		{
 		private:
-			BazisLib::CBuffer m_Buffer;
+			TypedBuffer<_CharType> m_ZeroTerminatedBuffer;
 			unsigned m_PendingLine;
 			bool m_bEOF;
 
 			enum {ReadChunkSize = 50};
 
 			DECLARE_REFERENCE(BazisLib::AIFile, m_pFile);
-		
+	
 		public:
-
 			_TextFile(const ManagedPointer<BazisLib::AIFile> &pFile) :
 				INIT_REFERENCE(m_pFile, pFile),
 				m_PendingLine(0),
@@ -45,18 +44,21 @@ namespace BazisLib
 			{
 				if (m_pFile && (sizeof(_CharType) == sizeof(wchar_t)))
 				{
-					m_Buffer.EnsureSize(sizeof(wchar_t));
-					if (m_pFile->Read(m_Buffer.GetData(), sizeof(wchar_t)) == sizeof(wchar_t))
+					m_ZeroTerminatedBuffer.EnsureSize(sizeof(wchar_t) * 2);
+					if (m_pFile->Read(m_ZeroTerminatedBuffer.GetData(), sizeof(wchar_t)) == sizeof(wchar_t))
 					{
-						if (*((wchar_t *)m_Buffer.GetData()) != 0xFEFF)
-							m_Buffer.SetSize(sizeof(wchar_t));
+						if (*((wchar_t *)m_ZeroTerminatedBuffer.GetData()) != 0xFEFF)
+							m_ZeroTerminatedBuffer.SetSize(sizeof(wchar_t));
 					}
 				}
+
+				_CharType term = _CharType();
+				m_ZeroTerminatedBuffer.AppendData(&term, sizeof(term));
 			}
 
 			bool IsEOF()
 			{
-				return m_bEOF && !m_Buffer.GetSize();
+				return m_bEOF && m_ZeroTerminatedBuffer.GetSize() <= sizeof(_CharType);
 			}
 
 			bool HasMoreData()
@@ -75,32 +77,44 @@ namespace BazisLib
 					return _DynamicStringT<_CharType>();
 				for (;;)
 				{
-					if (m_Buffer.GetSize())
+					if (m_ZeroTerminatedBuffer.GetSize() >= sizeof(_CharType))
 					{
-						unsigned LineEnding[2] = {_LineEnding, 0};
-						_CharType *pEnd = _FindSubstring((_CharType *)m_Buffer.GetData(), (_CharType *)LineEnding);
+						unsigned LineEnding[2] = { _LineEnding, 0 };
+						_CharType *pEnd = _FindSubstring((_CharType *)m_ZeroTerminatedBuffer.GetData(), (_CharType *)LineEnding);
+						if (pEnd >= m_ZeroTerminatedBuffer.GetDataAfterEndOfUsedSpace())
+						{
+							ASSERT(false);
+							pEnd = NULL;
+						}
+
 						if (pEnd)
 						{
-							pEnd[0] = 0;
+							_DynamicStringT<_CharType> str((_CharType *)m_ZeroTerminatedBuffer.GetData(), pEnd - (_CharType *)m_ZeroTerminatedBuffer.GetData());
 							pEnd += _LineEndingCharCount;
-							_DynamicStringT<_CharType> str((_CharType *)m_Buffer.GetData());
-							unsigned dif = (unsigned)(pEnd - (_CharType *)m_Buffer.GetData());
-							memmove(m_Buffer.GetData(), pEnd, m_Buffer.GetSize() - (dif - 1) * sizeof(_CharType));	//Copy one null-terminating character
-							m_Buffer.SetSize(m_Buffer.GetSize() - dif * sizeof(_CharType));
+							size_t startOfNextLineInChars = (size_t)(pEnd - (_CharType *)m_ZeroTerminatedBuffer.GetData());
+							size_t newSizeInChars = (m_ZeroTerminatedBuffer.GetSize() / sizeof(_CharType)) - startOfNextLineInChars;
+							memmove(m_ZeroTerminatedBuffer.GetData(), pEnd, newSizeInChars * sizeof(_CharType));	//The moved area includes a null-terminating character
+							if (newSizeInChars < 1)
+								newSizeInChars = 1;
+
+							m_ZeroTerminatedBuffer.SetSize(newSizeInChars * sizeof(_CharType));
+							m_ZeroTerminatedBuffer[newSizeInChars - 1] = 0;
 							return str;
 						}
 					}
-					m_Buffer.EnsureSize(m_Buffer.GetSize() + (ReadChunkSize + 1) * sizeof(_CharType));
-					size_t done = m_pFile->Read(((char *)m_Buffer.GetData()) + m_Buffer.GetSize(), ReadChunkSize * sizeof(_CharType));
+
+					m_ZeroTerminatedBuffer.EnsureSize(m_ZeroTerminatedBuffer.GetSize() + (ReadChunkSize + 1) * sizeof(_CharType));
+					size_t done = m_pFile->Read(((char *)m_ZeroTerminatedBuffer.GetData()) + m_ZeroTerminatedBuffer.GetSize() - sizeof(_CharType), ReadChunkSize * sizeof(_CharType));
 					if (!done)
 					{
 						m_bEOF = true;
-						_DynamicStringT<_CharType> ret = ((_CharType *)m_Buffer.GetData());
-						m_Buffer.SetSize(0);
+						_DynamicStringT<_CharType> ret = ((_CharType *)m_ZeroTerminatedBuffer.GetData());
+						m_ZeroTerminatedBuffer.SetSize(sizeof(_CharType));
+						m_ZeroTerminatedBuffer[0] = 0;
 						return ret;
 					}
-					m_Buffer.SetSize(m_Buffer.GetSize() + done);
-					((_CharType *)m_Buffer.GetData())[m_Buffer.GetSize() / sizeof(_CharType)] = 0;
+					m_ZeroTerminatedBuffer.SetSize(m_ZeroTerminatedBuffer.GetSize() + done);
+					m_ZeroTerminatedBuffer[m_ZeroTerminatedBuffer.GetSize() / sizeof(_CharType) - 1] = 0;
 				}
 			}
 		};

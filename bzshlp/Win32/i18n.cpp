@@ -22,7 +22,7 @@ BazisLib::ActionStatus BazisLib::InitializeLNGBasedTranslationEngine(LANGID Pref
 		iter = Directory(LNGDirectory).FindFirstFile(_T("*.lng"));
 	else
 	{
-		TCHAR tsz[MAX_PATH] = {0,};
+		TCHAR tsz[MAX_PATH] = { 0, };
 		GetModuleFileName(hMainModule, tsz, __countof(tsz));
 		iter = Directory(Path::Combine(Path::GetDirectoryName(TempStrPointerWrapper(tsz)), LNGDirectory)).FindFirstFile(_T("*.lng"));
 	}

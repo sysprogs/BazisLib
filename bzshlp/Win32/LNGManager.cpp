@@ -220,7 +220,7 @@ BazisLib::ActionStatus BazisLib::TranslationSystem::LNGManager::ReadLNGFileHeade
 	return MAKE_STATUS(ParsingFailed);
 }
 
-BazisLib::TranslationSystem::LNGManager::LNGManager( Directory::FindFileParams fileList )
+BazisLib::TranslationSystem::LNGManager::LNGManager(Directory::FindFileParams fileList)
 {
 	for (Directory::enumerator iterator = fileList; iterator.Valid(); iterator.Next())
 	{
@@ -233,7 +233,6 @@ BazisLib::TranslationSystem::LNGManager::LNGManager( Directory::FindFileParams f
 			m_InstalledLanguages[rec.Lang.LangID] = rec;
 		}
 	}
-
 }
 
 StringTable * BazisLib::TranslationSystem::LNGManager::LoadStringTableForLanguage( unsigned LangID, StringIDRecord *pIDTable )

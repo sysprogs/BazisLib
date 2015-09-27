@@ -16,14 +16,61 @@ CONFIG ?= DEBUG
 CONFIGURATION_FLAGS_FILE := $(call to_lowercase,$(CONFIG)).mak
 
 include $(CONFIGURATION_FLAGS_FILE)
+#LINKER_SCRIPT defined inside the configuration file (e.g. debug.mak) should override any linker scripts defined in shared .mak files
+CONFIGURATION_LINKER_SCRIPT := $(LINKER_SCRIPT)
+
 include $(ADDITIONAL_MAKE_FILES)
+
+ifneq ($(CONFIGURATION_LINKER_SCRIPT),)
+LINKER_SCRIPT := $(CONFIGURATION_LINKER_SCRIPT)
+endif
+
+ifneq ($(LINKER_SCRIPT),)
+LDFLAGS += -T$(LINKER_SCRIPT)
+endif
 
 ifeq ($(BINARYDIR),)
 error:
 	$(error Invalid configuration, please check your inputs)
 endif
 
-SOURCEFILES := ratecalc.cpp stdafx.cpp UserModeWorkerBackend.cpp Win32/BCD.cpp Win32/bulkusb.cpp Win32/bzsdev.cpp Win32/bzsreg.cpp Win32/cmdexec.cpp Win32/display.cpp Win32/i18n.cpp Win32/LNGManager.cpp Win32/services.cpp Win32/volmgr.cpp Win32/WMI.cpp Win32/wow64.cpp WinKernel/AlertableQueue.cpp WinKernel/bus.cpp WinKernel/cdrom.cpp WinKernel/crossplatform/crossvol.cpp WinKernel/devapi.cpp WinKernel/device.cpp WinKernel/DeviceEnumerator.cpp WinKernel/driver.cpp WinKernel/filter.cpp WinKernel/initguid.cpp WinKernel/ioctldbg.cpp WinKernel/iodevice.cpp WinKernel/iofilter.cpp WinKernel/irpqueue.cpp WinKernel/pnpdevice.cpp WinKernel/process.cpp WinKernel/SCSI/BasicBlockDevice.cpp WinKernel/SCSI/VirtualSCSICdrom.cpp WinKernel/SCSI/VirtualSCSIPDO.cpp WinKernel/storage.cpp WinKernel/storfilter.cpp WinKernel/volume.cpp
+SOURCEFILES := ratecalc.cpp \
+	stdafx.cpp \
+	UserModeWorkerBackend.cpp \
+	Win32/BCD.cpp \
+	Win32/bulkusb.cpp \
+	Win32/bzsdev.cpp \
+	Win32/bzsreg.cpp \
+	Win32/cmdexec.cpp \
+	Win32/display.cpp \
+	Win32/i18n.cpp \
+	Win32/LNGManager.cpp \
+	Win32/services.cpp \
+	Win32/volmgr.cpp \
+	Win32/WMI.cpp \
+	Win32/wow64.cpp \
+	WinKernel/AlertableQueue.cpp \
+	WinKernel/bus.cpp \
+	WinKernel/cdrom.cpp \
+	WinKernel/crossplatform/crossvol.cpp \
+	WinKernel/devapi.cpp \
+	WinKernel/device.cpp \
+	WinKernel/DeviceEnumerator.cpp \
+	WinKernel/driver.cpp \
+	WinKernel/filter.cpp \
+	WinKernel/initguid.cpp \
+	WinKernel/ioctldbg.cpp \
+	WinKernel/iodevice.cpp \
+	WinKernel/iofilter.cpp \
+	WinKernel/irpqueue.cpp \
+	WinKernel/pnpdevice.cpp \
+	WinKernel/process.cpp \
+	WinKernel/SCSI/BasicBlockDevice.cpp \
+	WinKernel/SCSI/VirtualSCSICdrom.cpp \
+	WinKernel/SCSI/VirtualSCSIPDO.cpp \
+	WinKernel/storage.cpp \
+	WinKernel/storfilter.cpp \
+	WinKernel/volume.cpp
 EXTERNAL_LIBS := 
 EXTERNAL_LIBS_COPIED := $(foreach lib, $(EXTERNAL_LIBS),$(BINARYDIR)/$(notdir $(lib)))
 

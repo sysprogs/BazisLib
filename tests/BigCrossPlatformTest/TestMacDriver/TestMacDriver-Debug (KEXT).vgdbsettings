@@ -133,7 +133,7 @@
       <Architecture>x86_64</Architecture>
       <GDBPath>gdb</GDBPath>
       <UseDebugKernel>false</UseDebugKernel>
-      <GDBServerTarget>192.168.0.3:8865</GDBServerTarget>
+      <GDBServerTarget>192.168.0.3:8864</GDBServerTarget>
       <LoadAppleSymbolsOnStart>true</LoadAppleSymbolsOnStart>
       <TrackModuleLoading>true</TrackModuleLoading>
       <FallbackToBreakpointsWithFileNameOnly>true</FallbackToBreakpointsWithFileNameOnly>
