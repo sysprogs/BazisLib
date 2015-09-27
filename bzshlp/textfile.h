@@ -110,7 +110,7 @@ namespace BazisLib
 						m_bEOF = true;
 						_DynamicStringT<_CharType> ret = ((_CharType *)m_ZeroTerminatedBuffer.GetData());
 						m_ZeroTerminatedBuffer.SetSize(sizeof(_CharType));
-						m_ZeroTerminatedBuffer[0] = 0;
+						m_ZeroTerminatedBuffer[(size_t)0] = 0;
 						return ret;
 					}
 					m_ZeroTerminatedBuffer.SetSize(m_ZeroTerminatedBuffer.GetSize() + done);
