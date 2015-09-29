@@ -309,9 +309,34 @@ namespace BazisLib
 				return acl;
 			}
 
+			static Security::TranslatedAcl GetDACLForPath(const BazisLib::String &path, BazisLib::ActionStatus *pStatus = NULL)
+			{
+				Security::TranslatedAcl acl;
+				PACL pAcl = NULL;
+				PSECURITY_DESCRIPTOR pDesc = NULL;
+				::GetNamedSecurityInfo(path.c_str(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, NULL, NULL, &pAcl, NULL, &pDesc);
+				if (!pDesc)
+				{
+					ASSIGN_STATUS(pStatus, ActionStatus::FromLastError());
+					return acl;
+				}
+				acl = pAcl;
+				ASSIGN_STATUS(pStatus, Success);
+				LocalFree(pDesc);
+				return acl;
+			}
+
 			ActionStatus SetDACL(Security::TranslatedAcl &NewDACL)
 			{
 				if (!::SetSecurityInfo(m_hFile, SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, NULL, NULL, NewDACL.BuildNTAcl(), NULL))
+					return MAKE_STATUS(Success);
+				else
+					return MAKE_STATUS(ActionStatus::FailFromLastError());
+			}
+
+			static ActionStatus SetDACLForPath(const BazisLib::String &path, Security::TranslatedAcl &NewDACL)
+			{
+				if (!::SetNamedSecurityInfo(const_cast<LPTSTR>(path.c_str()), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, NULL, NULL, NewDACL.BuildNTAcl(), NULL))
 					return MAKE_STATUS(Success);
 				else
 					return MAKE_STATUS(ActionStatus::FailFromLastError());
