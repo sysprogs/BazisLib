@@ -3,17 +3,32 @@
 
 using namespace BazisLib;
 
+enum { kBufSize = 1024 * 1024 };
+
 RamDisk::RamDisk(unsigned MegabyteCount)
 {
-	m_SectorCount = MegabyteCount * (1024 * 1024 / RAMDISK_SECTOR_SIZE);
-	m_TotalSize = MegabyteCount * 1024 * 1024;
-	m_pBuffer = (char *)bulk_malloc((unsigned)m_TotalSize);
+	__debugbreak();
+	int buffers = MegabyteCount / (kBufSize / 1024 / 1024);
+	for (int i = 0; i < buffers; i++)
+	{
+		PHYSICAL_ADDRESS start, end;
+		start.QuadPart = 0;
+		end.QuadPart = -1;
+		char *p = (char *)MmAllocateContiguousMemorySpecifyCache(kBufSize, start, end, start, MmCached);
+		if (!p)
+			break;
+		m_Buffers.push_back(p);
+	}
+
+	buffers = m_Buffers.size();
+	m_TotalSize = buffers * (ULONGLONG)kBufSize;
+	m_SectorCount = m_TotalSize  / RAMDISK_SECTOR_SIZE;
 }
 
 RamDisk::~RamDisk()
 {
-	if (m_pBuffer)
-		bulk_free(m_pBuffer, (size_t)m_TotalSize);
+	for (char *p : m_Buffers)
+		MmFreeContiguousMemory(p);
 }
 
 ULONGLONG RamDisk::GetSectorCount()
@@ -23,27 +38,44 @@ ULONGLONG RamDisk::GetSectorCount()
 
 unsigned RamDisk::Read(ULONGLONG ByteOffset, void *pBuffer, unsigned Length)
 {
-	if (!m_pBuffer)
-		return 0;
-	LONGLONG MaxSize = m_TotalSize - ByteOffset;
-	if (MaxSize < 0)
-		MaxSize = 0;
-	if (Length > MaxSize)
-		Length = (unsigned)MaxSize;
-	memcpy(pBuffer, m_pBuffer + ByteOffset, Length);
-	return Length;
+	unsigned done = 0;
+	while (done < Length)
+	{
+		unsigned cdone = DoTransfer(ByteOffset + done, (char*)pBuffer + done, Length - done, true);
+		if (!cdone)
+			break;
+		done += cdone;
+	}
+
+	return done;
 }
 
 unsigned RamDisk::Write(ULONGLONG ByteOffset, const void *pBuffer, unsigned Length)
 {
-	if (!m_pBuffer)
+	unsigned done = 0;
+	while (done < Length)
+	{
+		unsigned cdone = DoTransfer(ByteOffset + done, (char*)pBuffer + done, Length - done, false);
+		if (!cdone)
+			break;
+		done += cdone;
+	}
+
+	return done;
+}
+
+unsigned BazisLib::RamDisk::DoTransfer(ULONGLONG ByteOffset, void *pBuffer, unsigned Length, bool read)
+{
+	unsigned bufNum = (unsigned)(ByteOffset / kBufSize);
+	if (bufNum >= m_Buffers.size() || !m_Buffers[bufNum])
 		return 0;
-	LONGLONG MaxSize = m_TotalSize - ByteOffset;
-	if (MaxSize < 0)
-		MaxSize = 0;
-	if (Length > MaxSize)
-		Length = (unsigned)MaxSize;
-	memcpy(m_pBuffer + ByteOffset, pBuffer, Length);
-	return Length;
+	unsigned bufOff = (ByteOffset % kBufSize);
+
+	unsigned todo = min(Length, kBufSize - bufOff);
+	if (!read)
+		memcpy(m_Buffers[bufNum] + bufOff, pBuffer, todo);
+	else
+		memcpy(pBuffer, m_Buffers[bufNum] + bufOff, todo);
+	return todo;
 }
 

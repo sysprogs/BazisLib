@@ -164,6 +164,12 @@ namespace BazisLib
 			return ((char *)m_pBuffer) + m_UsedSize;
 		}
 
+		const void *GetDataAfterEndOfUsedSpace() const
+		{
+			ASSERT(m_UsedSize <= m_AllocatedSize);
+			return ((char *)m_pBuffer) + m_UsedSize;
+		}
+
 		void *GetData()
 		{
 			return m_pBuffer;

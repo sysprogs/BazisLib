@@ -58,12 +58,43 @@ public:
 		SetNewPNPState(Started);
 
 		//Just to demonstrate our bus, let's add 2 RAMDISK devices of different sizes
-		AddRamdisk(16, true);	//This disk will have 1 partition and will immediately get a drive letter
-		AddRamdisk(32, false);	//This disk will appear in Disk Management (under Computer Management) as an uninitialized disk
+		AddRamdisk(32768, true);	//This disk will have 1 partition and will immediately get a drive letter
+		//AddRamdisk(32, false);	//This disk will appear in Disk Management (under Computer Management) as an uninitialized disk
 
 		return STATUS_SUCCESS;
 	}
 
+};
+
+class MyVolume : public BasicStorageVolume
+{
+	RamDisk *m_pDisk = new RamDisk(32768);
+
+	virtual ULONGLONG GetTotalSize() override
+	{
+		return m_pDisk->GetSectorCount() * m_pDisk->GetSectorSize();
+	}
+
+	virtual NTSTATUS Read(ULONGLONG ByteOffset, PVOID pBuffer, ULONG Length, PULONG_PTR pBytesDone) override
+	{
+		*pBytesDone = m_pDisk->Read(ByteOffset, pBuffer, Length);
+		return STATUS_SUCCESS;
+	}
+
+	virtual NTSTATUS Write(ULONGLONG ByteOffset, PVOID pBuffer, ULONG Length, PULONG_PTR pBytesDone) override
+	{
+		*pBytesDone = m_pDisk->Write(ByteOffset, pBuffer, Length);
+		return STATUS_SUCCESS;
+	}
+
+	~MyVolume()
+	{
+		m_pDisk->Release();
+	}
+};
+
+class DummyPDO : public BusPDO
+{
 };
 
 class RamDiskBusDriver : public Driver
@@ -75,14 +106,17 @@ public:
 
 	virtual NTSTATUS AddDevice(IN PDEVICE_OBJECT  PhysicalDeviceObject) override
 	{
-		RamDiskBus *pDev = new RamDiskBus();
+		/*RamDiskBus *pDev = new RamDiskBus();
 		if (!pDev)
 			return STATUS_NO_MEMORY;
 		NTSTATUS st = pDev->AddDevice(this, PhysicalDeviceObject);
 		if (!NT_SUCCESS(st))
 			return st;
+			
+		return STATUS_SUCCESS;*/
 
-		return STATUS_SUCCESS;
+		DummyPDO *pVol = new DummyPDO();
+		return pVol->AddDevice(this, PhysicalDeviceObject);
 	}
 
 	virtual ~RamDiskBusDriver()

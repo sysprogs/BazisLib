@@ -9,8 +9,8 @@
 
 [Version]
 Signature="$WINDOWS NT$"
-Class=HDC
-ClassGuid={4d36e96a-e325-11ce-bfc1-08002be10318}
+Class=Volume
+ClassGuid= {71a27cdd-812a-11d0-bec7-08002be2092f}
 Provider=%BAZIS%
 DriverVer=01/01/2010, 1.00.0000
 CatalogFile=RamDiskBus.cat

@@ -18,7 +18,10 @@ namespace BazisLib
 	protected:
 		ULONGLONG m_SectorCount;
 		ULONGLONG m_TotalSize;
-		char *m_pBuffer;
+		std::vector<char *> m_Buffers;
+
+		unsigned DoTransfer(ULONGLONG ByteOffset, void *pBuffer, unsigned Length, bool read);
+
 
 	public:
 		unsigned GetSectorSize() {return RAMDISK_SECTOR_SIZE;}

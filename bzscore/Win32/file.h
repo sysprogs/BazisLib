@@ -314,7 +314,7 @@ namespace BazisLib
 				Security::TranslatedAcl acl;
 				PACL pAcl = NULL;
 				PSECURITY_DESCRIPTOR pDesc = NULL;
-				::GetNamedSecurityInfo(path.c_str(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, NULL, NULL, &pAcl, NULL, &pDesc);
+				::GetNamedSecurityInfo(const_cast<LPWSTR>(path.c_str()), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, NULL, NULL, &pAcl, NULL, &pDesc);
 				if (!pDesc)
 				{
 					ASSIGN_STATUS(pStatus, ActionStatus::FromLastError());
