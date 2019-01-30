@@ -58,6 +58,22 @@ namespace BazisLib
 			
 			CBuffer m_InstanceId;
 
+			iterator(const iterator&) = delete;
+
+		public:
+			iterator(iterator&& right) :
+				m_Set(right.m_Set),
+				m_Index(right.m_Index),
+				m_Data(right.m_Data),
+				m_DevinfoData(right.m_DevinfoData),
+				m_bInterfaceDataPresent(right.m_bInterfaceDataPresent),
+				m_pDetailData(right.m_pDetailData),
+				m_DetailBufferSize(right.m_DetailBufferSize),
+				m_InstanceId(std::move(right.m_InstanceId))
+			{
+			}
+
+		private:
 			iterator(DeviceInformationSet &set, unsigned index = 0) :
 				m_Set(set),
 				m_Index(index),
@@ -324,7 +340,7 @@ namespace BazisLib
 			if (m_hDevInfo != INVALID_HANDLE_VALUE)
 				SetupDiDestroyDeviceInfoList(m_hDevInfo);
 		}
-
+        
 		iterator begin()
 		{
 			return iterator(*this);
