@@ -700,7 +700,7 @@ namespace BazisLib
 		}
 
 	public:
-		class _CaseInsensitiveLess : public std::binary_function<_Base, _Base, bool>
+		class _CaseInsensitiveLess// : public std::binary_function<_Base, _Base, bool>
 		{
 		public:
 			bool operator()(const _TempStringImplT &_Left, const _TempStringImplT &_Right) const
@@ -1490,7 +1490,7 @@ namespace BazisLib
 	typedef _TempStrPointerWrapperT<wchar_t> TempStrPointerWrapperW;
 #endif
 
-	template <class _StringT> class _CaseInsensitiveLess : public std::binary_function<_StringT, _StringT, bool>
+	template <class _StringT> class _CaseInsensitiveLess// : public std::binary_function<_StringT, _StringT, bool>
 	{
 	public:
 		bool operator()(const _StringT &_Left, const _StringT &_Right) const

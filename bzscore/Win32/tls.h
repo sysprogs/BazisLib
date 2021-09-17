@@ -40,50 +40,50 @@ namespace BazisLib
 		public:
 			_BaseType operator+=(_BaseType value)
 			{
-				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(m_tlsID);
-				TlsSetValue(m_tlsID, (LPVOID)(INT_PTR)(pval += value));
+				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(_TLSValue<_BaseType>::m_tlsID);
+				TlsSetValue(_TLSValue<_BaseType>::m_tlsID, (LPVOID)(INT_PTR)(pval += value));
 				return pval;
 			}
 
 			_BaseType operator-=(_BaseType value)
 			{
-				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(m_tlsID);
-				TlsSetValue(m_tlsID, (LPVOID)(INT_PTR)(pval -= value));
+				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(_TLSValue<_BaseType>::m_tlsID);
+				TlsSetValue(_TLSValue<_BaseType>::m_tlsID, (LPVOID)(INT_PTR)(pval -= value));
 				return pval;
 			}
 
 			_BaseType operator*=(_BaseType value)
 			{
-				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(m_tlsID);
-				TlsSetValue(m_tlsID, (LPVOID)(INT_PTR)(pval *= value));
+				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(_TLSValue<_BaseType>::m_tlsID);
+				TlsSetValue(_TLSValue<_BaseType>::m_tlsID, (LPVOID)(INT_PTR)(pval *= value));
 				return pval;
 			}
 
 			_BaseType operator++()
 			{
-				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(m_tlsID);
-				TlsSetValue(m_tlsID, (LPVOID)(INT_PTR)(++pval));
+				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(_TLSValue<_BaseType>::m_tlsID);
+				TlsSetValue(_TLSValue<_BaseType>::m_tlsID, (LPVOID)(INT_PTR)(++pval));
 				return pval;
 			}
 
 			_BaseType operator++(int)
 			{
-				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(m_tlsID);
-				TlsSetValue(m_tlsID, (LPVOID)(INT_PTR)(pval + 1));
+				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(_TLSValue<_BaseType>::m_tlsID);
+				TlsSetValue(_TLSValue<_BaseType>::m_tlsID, (LPVOID)(INT_PTR)(pval + 1));
 				return pval;
 			}
 
 			_BaseType operator--()
 			{
-				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(m_tlsID);
-				TlsSetValue(m_tlsID, (LPVOID)(INT_PTR)(--pval));
+				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(_TLSValue<_BaseType>::m_tlsID);
+				TlsSetValue(_TLSValue<_BaseType>::m_tlsID, (LPVOID)(INT_PTR)(--pval));
 				return pval;
 			}
 
 			_BaseType operator--(int)
 			{
-				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(m_tlsID);
-				TlsSetValue(m_tlsID, (LPVOID)(INT_PTR)(pval - 1));
+				_BaseType pval = (_BaseType)(INT_PTR)TlsGetValue(_TLSValue<_BaseType>::m_tlsID);
+				TlsSetValue(_TLSValue<_BaseType>::m_tlsID, (LPVOID)(INT_PTR)(pval - 1));
 				return pval;
 			}
 		};

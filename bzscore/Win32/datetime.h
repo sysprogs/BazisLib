@@ -174,7 +174,7 @@ namespace BazisLib
 		{
 		}
 
-		DateTime(DateTime &date, unsigned Hour, unsigned Minute, unsigned Second, unsigned Milliseconds) :
+		DateTime(const DateTime &date, unsigned Hour, unsigned Minute, unsigned Second, unsigned Milliseconds) :
 		  _DateTime(date)
 		{
 			SYSTEMTIME sysTime;

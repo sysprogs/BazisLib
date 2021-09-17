@@ -547,7 +547,7 @@ namespace BazisLib
 				PACL BuildNTAcl()
 				{
 					size_t totalSize = sizeof(ACL);
-					for each(const TranslatedAce &ace in *this)
+					for(const TranslatedAce &ace : *this)
 						totalSize += ace.GetTotalACESize();
 
 					sort();
@@ -561,7 +561,7 @@ namespace BazisLib
 					void *pAceBuf = ((char *)m_CombinedACL.GetData()) + sizeof(ACL);
 					totalSize -= sizeof(ACL);
 					size_t done = 0;
-					for each(const TranslatedAce &ace in *this)
+					for(const TranslatedAce &ace : *this)
 					{
 						size_t aceSize = ace.Serialize(pAceBuf, totalSize);
 						totalSize -= aceSize;
