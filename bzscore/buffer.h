@@ -87,12 +87,15 @@ namespace BazisLib
 			m_AllocatedSize = m_UsedSize = 0;
 		}
 
-		bool EnsureSize(size_t size, size_t allocIncrementStep = 0)
+		bool EnsureSize(size_t size)
 		{
 			if (m_AllocatedSize >= size)
 				return true;
 
-			size_t incrementedSize = m_AllocatedSize + allocIncrementStep;
+			size_t incrementedSize = m_AllocatedSize + m_AllocatedSize / 2;
+			if (incrementedSize < 1024)
+				incrementedSize = 1024;
+
 			if (size < incrementedSize)
 				size = incrementedSize;
 
@@ -208,22 +211,22 @@ namespace BazisLib
 			return pR;
 		}
 
-		bool AppendData(const void *pData, size_t Size, size_t allocIncrementStep = 0)
+		bool AppendData(const void *pData, size_t Size)
 		{
 			if (!Size)
 				return true;
 			if (!pData)
 				return false;
-			if (!EnsureSize(GetSize() + Size, allocIncrementStep))
+			if (!EnsureSize(GetSize() + Size))
 				return false;
 			memcpy((char *)GetData() + GetSize(), pData, Size);
 			SetSize(GetSize() + Size);
 			return true;
 		}
 
-		bool append(const void *pData, size_t Size, size_t allocIncrementStep = 0)
+		bool append(const void *pData, size_t Size)
 		{
-			return AppendData(pData, Size, allocIncrementStep);
+			return AppendData(pData, Size);
 		}
 	};
 
